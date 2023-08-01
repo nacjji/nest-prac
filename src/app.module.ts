@@ -1,23 +1,29 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as path from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
+
 require('dotenv').config();
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRootAsync({
-      useFactory: () => ({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
         retryAttempts: 10,
         type: 'mysql',
-        host: process.env.DB_HOST,
-        port: 3306,
-        database: 'users',
-        username: process.env.DB_USER,
-        password: process.env.DB_PASS,
+        host: configService.get('DB_HOST'),
+        port: configService.get('DB_PORT'),
+        database: configService.get('DB_NAME'),
+        username: configService.get('DB_USER'),
+        password: configService.get('DB_PASS'),
         entities: [path.join(__dirname, 'entities/**/*.entity.{js, ts')],
         synchronize: false,
         logging: true,
