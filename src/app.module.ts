@@ -12,12 +12,13 @@ require('dotenv').config();
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: `.env${process.env.NODE_ENV}`,
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        retryAttempts: 10,
+        retryAttempts: configService.get('NODE_ENV') === 'prod' ? 10 : 1,
         type: 'mysql',
         host: configService.get('DB_HOST'),
         port: configService.get('DB_PORT'),
