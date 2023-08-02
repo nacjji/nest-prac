@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as path from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 
 require('dotenv').config();
@@ -25,7 +26,7 @@ require('dotenv').config();
         database: configService.get('DB_NAME'),
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASS'),
-        entities: [path.join(__dirname, 'entities/**/*.entity.{js, ts')],
+        entities: [path.join(__dirname, '/entities/**/*.entity.{js, ts}')],
         synchronize: false,
         logging: true,
         // 이거 추가해주니까 추가됨
@@ -34,6 +35,7 @@ require('dotenv').config();
       }),
     }),
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
