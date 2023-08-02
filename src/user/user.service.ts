@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcrypt';
 import { Repository } from 'typeorm';
@@ -9,6 +10,7 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
+    private readonly configService: ConfigService,
   ) {}
 
   // 회원가입
@@ -19,7 +21,7 @@ export class UserService {
       throw new BadRequestException('이미 존재하는 이메일입니다.');
     }
 
-    const hashedPassword = await hash(password, 11);
+    const hashedPassword = await hash(password, this.configService.get('SALT'));
 
     const user = await this.userRepository.save({
       email,
