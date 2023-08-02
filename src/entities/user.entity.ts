@@ -1,8 +1,8 @@
 import { Column, Entity } from 'typeorm';
-import { CommonPkEntity } from './common/common.entity';
+import { CommonBigPkEntity } from './common/common.entity';
 
 @Entity('User')
-export class UserEntity extends CommonPkEntity {
+export class UserEntity extends CommonBigPkEntity {
   @Column('varchar', { unique: false, nullable: false })
   email: string;
   @Column('varchar', { unique: false, nullable: false })
