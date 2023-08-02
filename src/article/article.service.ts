@@ -13,10 +13,9 @@ export class ArticleService {
 
   async createArticle(title: string, content: string, userId: number) {
     // Raw Query 사용하는 방식
-    const article = await this.articleRepository.query(
+    await this.articleRepository.query(
       `INSERT INTO Article(title, content, userId) VALUES('${title}', '${content}', ${userId}) `,
     );
-    return article.insertId;
   }
 
   async getArticle(articleId?: number, page?: number, per?: number) {
@@ -54,7 +53,7 @@ export class ArticleService {
     if (isExist[0].userId !== userId)
       throw new ConflictException('작성자만 수정할 수 있습니다.');
 
-    const article = await this.articleRepository.query(
+    await this.articleRepository.query(
       `UPDATE Article 
       SET 
         title = '${title}',
