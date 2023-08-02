@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Put, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from '../decorators/user.decorator';
@@ -23,6 +23,20 @@ export class CommentController {
     return response.status(201).json({
       code: 201,
       message: '댓글을 작성했습니다.',
+    });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  async updateComment(@Body() body, @User() user, @Res() response: Response) {
+    const { id, content } = body;
+    const userId = user.id;
+
+    await this.commentService.updateComment(id, content, userId);
+
+    return response.status(201).json({
+      code: 201,
+      message: '댓글을 수정했습니다.',
     });
   }
 }
