@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as dotenv from 'dotenv';
-import * as path from 'path';
 import { DataSource } from 'typeorm';
+import { ArticleEntity } from './src/entities/article.entity';
+import { CommentEntity } from './src/entities/comment.entity';
+import { UserEntity } from './src/entities/user.entity';
 dotenv.config({ path: `.env.dev` });
 
 export const dataSource = new DataSource({
@@ -11,7 +13,7 @@ export const dataSource = new DataSource({
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
-  entities: [path.join(__dirname, 'src/entities/**/*.entity.js')],
+  entities: [UserEntity, ArticleEntity, CommentEntity],
   synchronize: false,
   logging: true,
 });

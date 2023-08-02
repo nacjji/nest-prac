@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { User } from 'src/decorators/user.decorator';
 import { UserService } from './user.service';
 
 @Controller('/user')
@@ -15,7 +16,15 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('user-info')
-  async getUser() {
-    return 'user-info Page';
+  async getUser(
+    @User()
+    user: {
+      id: number;
+      email: string;
+      createdAt: string;
+      updatedAt: string;
+    },
+  ) {
+    return user;
   }
 }
