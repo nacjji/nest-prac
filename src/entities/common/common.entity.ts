@@ -5,8 +5,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export class CommonPkEntity {
-  @PrimaryGeneratedColumn({ type: 'int' })
+export class CommonBigPkEntity {
+  @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
   @CreateDateColumn({ type: 'timestamp' })

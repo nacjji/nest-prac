@@ -1,12 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 
-@Controller('user')
+@Controller('/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('/home')
-  async getHomeList() {
-    return this.userService.getHomeList();
+  @Post('signup')
+  async signup(@Body() body) {
+    const { email, password } = body;
+
+    return this.userService.signup(email, password);
   }
 }

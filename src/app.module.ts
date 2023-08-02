@@ -7,6 +7,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 
+require('dotenv').config();
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,6 +28,8 @@ import { UserModule } from './user/user.module';
         entities: [path.join(__dirname, 'entities/**/*.entity.{js, ts')],
         synchronize: false,
         logging: true,
+        // 이거 추가해주니까 추가됨
+        autoLoadEntities: true,
         timezone: 'local',
       }),
     }),
