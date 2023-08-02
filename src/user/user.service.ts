@@ -2,8 +2,10 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcrypt';
+import * as dotenv from 'dotenv';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
+dotenv.config({ path: `.env.dev` });
 
 @Injectable()
 export class UserService {
@@ -20,13 +22,13 @@ export class UserService {
     if (isExist) {
       throw new BadRequestException('이미 존재하는 이메일입니다.');
     }
-
-    const hashedPassword = await hash(password, this.configService.get('SALT'));
+    const hashedPassword = await hash(password, Number(process.env.SALT));
 
     const user = await this.userRepository.save({
       email,
       password: hashedPassword,
     });
+
     return user;
   }
 }
