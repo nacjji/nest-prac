@@ -11,6 +11,22 @@ export class ArticleService {
     private readonly articleRepository: Repository<ArticleEntity>,
   ) {}
 
+  async isExist(id: number, userId: number) {
+    const [isExist] = await this.articleRepository.query(
+      `SELECT 
+        *
+      FROM Article 
+      WHERE id = ${id}
+      AND deletedAt IS NULL`,
+    );
+
+    if (!isExist)
+      throw new ConflictException('존재하지 않거나 삭제된 Article입니다.');
+
+    if (isExist.userId !== userId)
+      throw new ConflictException('작성자만 수정할 수 있습니다.');
+  }
+
   async createArticle(title: string, content: string, userId: number) {
     // Raw Query 사용하는 방식
     await this.articleRepository.query(
@@ -40,19 +56,7 @@ export class ArticleService {
     content: string,
     userId: number,
   ) {
-    const isExist = await this.articleRepository.query(
-      `SELECT 
-        * 
-      FROM Article AS a
-      WHERE a.id = ${id}
-      AND a.deletedAt IS NULL`,
-    );
-
-    if (!isExist.length)
-      throw new ConflictException('존재하지 않거나 삭제된 Article입니다.');
-    if (isExist[0].userId !== userId)
-      throw new ConflictException('작성자만 수정할 수 있습니다.');
-
+    await this.isExist(id, userId);
     await this.articleRepository.query(
       `UPDATE Article 
       SET 
@@ -66,24 +70,22 @@ export class ArticleService {
   }
 
   async deleteArticle(id: number, userId: number) {
-    const isExist = await this.articleRepository.query(
-      `SELECT 
-        * 
-      FROM Article AS a
-      WHERE a.id = ${id}
-      AND a.deletedAt IS NULL`,
-    );
+    await this.isExist(id, userId);
 
-    if (!isExist.length)
-      throw new ConflictException('존재하지 않거나 삭제된 Article입니다.');
-    if (isExist[0].userId !== userId)
-      throw new ConflictException('작성자만 삭제할 수 있습니다.');
+    // transaction 추가예정
 
     await this.articleRepository.query(
       `UPDATE 
-        Article 
-      SET deletedAt = NOW() 
+        Article
+      SET deletedAt = NOW()
       WHERE id = ${id}`,
+    );
+
+    await this.articleRepository.query(
+      `UPDATE 
+        Comment
+      SET deletedAt = NOW()
+      WHERE articleId = ${id}`,
     );
   }
 }

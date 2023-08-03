@@ -9,9 +9,9 @@ export class UserController {
 
   @Post('signup')
   async signup(@Body() body) {
-    const { email, password } = body;
+    const { email, password, nickname } = body;
 
-    return this.userService.signup(email, password);
+    return this.userService.signup(email, password, nickname);
   }
 
   @UseGuards(JwtAuthGuard)
