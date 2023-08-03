@@ -9,6 +9,7 @@ import { ArticleModule } from './article/article.module';
 import { AuthModule } from './auth/auth.module';
 import { CommentModule } from './comment/comment.module';
 import { UserModule } from './user/user.module';
+import { configValidator } from './validator/common/configValidator';
 require('dotenv').config();
 
 @Module({
@@ -16,6 +17,7 @@ require('dotenv').config();
     ConfigModule.forRoot({
       envFilePath: `.env.${process.env.NODE_ENV}`,
       isGlobal: true,
+      validationSchema: configValidator,
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
