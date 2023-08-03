@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as path from 'path';
 import { AppController } from './app.controller';
@@ -9,6 +9,7 @@ import { AppService } from './app.service';
 import { ArticleModule } from './article/article.module';
 import { AuthModule } from './auth/auth.module';
 import { CommentModule } from './comment/comment.module';
+import { HttpExceptionFilter } from './filter/http-exception.filter';
 import { undefinedToNullInterceptor } from './interceptors/undefinedToNull.interceptor';
 import { UserModule } from './user/user.module';
 import { configValidator } from './validator/common/configValidator';
@@ -47,7 +48,14 @@ require('dotenv').config();
   controllers: [AppController],
   providers: [
     AppService,
-    { provide: APP_INTERCEPTOR, useClass: undefinedToNullInterceptor },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: undefinedToNullInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
   ],
 })
 export class AppModule {}
