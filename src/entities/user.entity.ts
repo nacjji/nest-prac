@@ -7,6 +7,10 @@ import { CommonBigPkEntity } from './common/common.entity';
 export class UserEntity extends CommonBigPkEntity {
   @Column('varchar', { unique: false, nullable: false })
   email: string;
+
+  @Column('varchar', { unique: true, nullable: false })
+  nickname: string;
+
   @Column('varchar', { unique: false, nullable: false })
   password: string;
 

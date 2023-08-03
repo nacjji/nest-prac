@@ -9,7 +9,7 @@ export class CommentEntity extends CommonBigPkEntity {
   content: string;
 
   @Column('bigint', { unique: false, nullable: true })
-  parantId: string | null;
+  parentId: string | null;
 
   @Column('varchar', { unique: false, nullable: true })
   userId: string | null;
