@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { commentDataValidator } from 'src/validator/commentValidator/commentDataValidator';
+import { commentParamValidator } from 'src/validator/commentValidator/commentParamValidator';
 import { commonParamValidator } from 'src/validator/common/commonParamValidator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from '../decorators/user.decorator';
@@ -31,6 +32,7 @@ export class CommentController {
   ) {
     try {
       await commonParamValidator.validateAsync({ page, per });
+      await commentParamValidator.validateAsync({ articleId, parentId });
     } catch (error) {
       throw new BadRequestException(error.message);
     }

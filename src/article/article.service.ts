@@ -37,14 +37,16 @@ export class ArticleService {
   async getArticle(articleId?: number, page?: number, per?: number) {
     const article = await this.articleRepository.query(
       `SELECT 
-          id, 
+          a.id, 
           title, 
+          u.nickname,
           ${articleId ? `content,` : ``}
-          DATE_FORMAT(createdAt, '%Y-%m-%d %H:%i') AS createdAt 
-        FROM Article 
-        WHERE deletedAt IS NULL
-        ${articleId ? `AND id = ${articleId}` : ``}
-        ORDER BY createdAt DESC, id DESC
+          DATE_FORMAT(a.createdAt, '%Y-%m-%d %H:%i') AS createdAt 
+        FROM Article AS a
+        LEFT JOIN User AS u ON u.id = a.userId
+        WHERE a.deletedAt IS NULL
+        ${articleId ? `AND a.id = ${articleId}` : ``}
+        ORDER BY a.createdAt DESC, a.id DESC
         ${attachOffsetLimit(page, per)}`,
     );
     return article;
