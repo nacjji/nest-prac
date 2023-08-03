@@ -35,16 +35,18 @@ export class CommentService {
   ) {
     const comment = await this.commentRepository.query(
       `SELECT 
-        id, 
+        c.id, 
+        u.nickname,
         content, 
         articleId, 
         parentId, 
         userId, 
-        DATE_FORMAT(createdAt, '%Y-%m-%d %H:%i') AS createdAt 
-      FROM Comment 
+        DATE_FORMAT(c.createdAt, '%Y-%m-%d %H:%i') AS createdAt 
+      FROM Comment AS c
+      LEFT JOIN User AS u ON u.id = c.userId
       WHERE articleId = ${articleId}
       ${parentId ? `AND parentId = ${parentId}` : ``}
-      ORDER BY createdAt DESC
+      ORDER BY c.createdAt DESC
       ${attachOffsetLimit(page, per)}`,
     );
 
