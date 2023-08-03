@@ -44,8 +44,8 @@ export class CommentService {
       FROM Comment 
       WHERE articleId = ${articleId}
       ${parentId ? `AND parentId = ${parentId}` : ``}
-      ${attachOffsetLimit(page, per)}
-      ORDER BY createdAt DESC`,
+      ORDER BY createdAt DESC
+      ${attachOffsetLimit(page, per)}`,
     );
 
     return comment;
@@ -68,15 +68,17 @@ export class CommentService {
     if (!isExistArticle)
       throw new ConflictException('존재하지 않는 Article ID입니다.');
 
-    const [isParent] = await this.commentRepository.query(
-      `SELECT 
+    if (parentId) {
+      const [isParent] = await this.commentRepository.query(
+        `SELECT 
         id
       FROM Comment
       WHERE id = ${parentId}
       AND articleId = ${articleId}`,
-    );
+      );
 
-    if (!isParent) throw new ConflictException('존재하지 않는 댓글입니다.');
+      if (!isParent) throw new ConflictException('존재하지 않는 댓글입니다.');
+    }
 
     await this.commentRepository.query(
       `INSERT INTO Comment(

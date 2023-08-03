@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -12,6 +13,8 @@ import {
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/decorators/user.decorator';
+import { articleDataValidator } from 'src/validator/articleValidator/articleDataValidator';
+import { commonParamValidator } from 'src/validator/common/commonParamValidator';
 import { ArticleService } from './article.service';
 
 @Controller('article')
@@ -23,6 +26,12 @@ export class ArticleController {
   async createArticle(@Body() body, @User() user, @Res() response: Response) {
     const { title, content } = body;
     const userId = user.id;
+    try {
+      await articleDataValidator.validateAsync({ title, content });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+
     const article = await this.articleService.createArticle(
       title,
       content,
@@ -42,6 +51,16 @@ export class ArticleController {
     @Query('per') per: number,
     @Res() response: Response,
   ) {
+    try {
+      await commonParamValidator.validateAsync({
+        id,
+        page,
+        per,
+      });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+
     const article = await this.articleService.getArticle(id, page, per);
 
     return response
@@ -60,6 +79,13 @@ export class ArticleController {
       content,
       userId,
     );
+    try {
+      await articleDataValidator
+        .tailor('update')
+        .validateAsync({ id, title, content });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
 
     return response
       .status(201)

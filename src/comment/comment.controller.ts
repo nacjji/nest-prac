@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -10,6 +11,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { commentDataValidator } from 'src/validator/commentValidator/commentDataValidator';
+import { commonParamValidator } from 'src/validator/common/commonParamValidator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from '../decorators/user.decorator';
 import { CommentService } from './comment.service';
@@ -26,6 +29,12 @@ export class CommentController {
     @Query('per') per: number,
     @Res() response: Response,
   ) {
+    try {
+      await commonParamValidator.validateAsync({ page, per });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+
     const comment = await this.commentService.getComment(
       articleId,
       parentId,
@@ -44,6 +53,17 @@ export class CommentController {
     const { content, articleId } = body;
     const parentId = body?.parentId; // 대댓글일 경우
     const userId = user.id;
+
+    try {
+      await commentDataValidator.tailor('create').validateAsync({
+        content,
+        parentId,
+        articleId,
+      });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+
     await this.commentService.createComment(
       content,
       articleId,
@@ -61,6 +81,14 @@ export class CommentController {
   async updateComment(@Body() body, @User() user, @Res() response: Response) {
     const { id, content } = body;
     const userId = user.id;
+
+    try {
+      await commentDataValidator
+        .tailor('update')
+        .validateAsync({ id, content });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
 
     await this.commentService.updateComment(id, content, userId);
 
