@@ -10,27 +10,35 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger';
+
 import { Response } from 'express';
-import {
-  CommentModel,
-  CommentParamModel,
-} from 'src/interface/comment.interface';
-import { UserModel } from 'src/interface/user.interface';
+import { DeleteArticleDto } from 'src/article/article.dto';
+import { ReadUserDto } from 'src/user/user.dto';
+
 import { commentDataValidator } from 'src/validator/commentValidator/commentDataValidator';
 import { commentParamValidator } from 'src/validator/commentValidator/commentParamValidator';
 import { commonParamValidator } from 'src/validator/common/commonParamValidator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from '../decorators/user.decorator';
+import {
+  CreateCommentDto,
+  ReadCommentDto,
+  UpdateCommentDto,
+} from './comment.dto';
 import { CommentService } from './comment.service';
 
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
-
+  @ApiOperation({
+    summary: '댓글 조회 API',
+    description: '유저가 댓글을 조회한다.',
+  })
   @Get()
   async getComment(
     @Query()
-    query: CommentParamModel,
+    query: ReadCommentDto,
     @Res() response: Response,
   ) {
     try {
@@ -58,15 +66,24 @@ export class CommentController {
       .json({ code: 200, message: '댓글을 불러왔습니다.', data: comment });
   }
 
+  @ApiOperation({
+    summary: '댓글 작성 API',
+    description: '유저가 댓글을 작성한다.',
+  })
+  @ApiBody({
+    type: CreateCommentDto,
+  })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
   async createComment(
-    @Body() body: CommentModel,
-    @User() user: UserModel,
+    @Body() body: CreateCommentDto,
+    @User() user: ReadUserDto,
     @Res() response: Response,
   ) {
-    const { content, articleId } = body;
-    const parentId = body?.parentId; // 대댓글일 경우
+    const content = body.content;
+    const articleId = Number(body.articleId);
+    const parentId = Number(body.parentId) || undefined; // 대댓글일 경우
     const userId = user.id;
 
     try {
@@ -91,11 +108,19 @@ export class CommentController {
     });
   }
 
+  @ApiOperation({
+    summary: '댓글 수정 API',
+    description: '유저가 댓글을 수정한다.',
+  })
+  @ApiBody({
+    type: UpdateCommentDto,
+  })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Put()
   async updateComment(
-    @Body() body: CommentModel,
-    @User() user: UserModel,
+    @Body() body: UpdateCommentDto,
+    @User() user: ReadUserDto,
     @Res() response: Response,
   ) {
     const { id, content } = body;
@@ -117,11 +142,19 @@ export class CommentController {
     });
   }
 
+  @ApiOperation({
+    summary: '댓글 삭제 API',
+    description: '유저가 댓글을 삭제한다.',
+  })
+  @ApiBody({
+    type: DeleteArticleDto,
+  })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete()
   async deleteComment(
-    @Body() body: { id: number },
-    @User() user: UserModel,
+    @Body() body: DeleteArticleDto,
+    @User() user: ReadUserDto,
     @Res() response: Response,
   ) {
     const { id } = body;

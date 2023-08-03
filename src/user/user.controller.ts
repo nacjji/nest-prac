@@ -10,7 +10,7 @@ import {
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/decorators/user.decorator';
-import { UserModel } from 'src/interface/user.interface';
+import { CreateUserDto, ReadUserDto, UpdateUserDto } from './user.dto';
 import { UserService } from './user.service';
 
 @Controller('/user')
@@ -18,9 +18,8 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('signup')
-  async signup(@Body() body) {
+  async signup(@Body() body: CreateUserDto) {
     const { email, password, nickname } = body;
-
     return this.userService.signup(email, password, nickname);
   }
 
@@ -28,7 +27,7 @@ export class UserController {
   @Get()
   async getUser(
     @User()
-    user: UserModel,
+    user: ReadUserDto,
   ) {
     return user;
   }
@@ -36,8 +35,8 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Put()
   async updateUser(
-    @User() user: UserModel,
-    @Body() body: { nickname: string },
+    @User() user: ReadUserDto,
+    @Body() body: UpdateUserDto,
     @Res() resoponse: Response,
   ) {
     const { nickname } = body;

@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { ArticleEntity } from './article.entity';
 import { CommonBigPkEntity } from './common/common.entity';
@@ -6,15 +7,30 @@ import { UserEntity } from './user.entity';
 @Entity('Comment')
 export class CommentEntity extends CommonBigPkEntity {
   @Column('varchar', { unique: false, nullable: false })
+  @ApiProperty({
+    example: '댓글 내용',
+    description: '댓글 내용',
+    required: true,
+  })
   content: string;
 
   @Column('bigint', { unique: false, nullable: true })
+  @ApiProperty({
+    example: '원댓글 ID',
+    description: '원댓글 ID',
+    required: true,
+  })
   parentId: string | null;
 
   @Column('varchar', { unique: false, nullable: true })
   userId: string | null;
 
   @Column('bigint', { unique: false, nullable: false })
+  @ApiProperty({
+    example: 'Article ID',
+    description: 'Article ID',
+    required: true,
+  })
   articleId: string | null;
 
   @ManyToOne(() => UserEntity, (user) => user.comments)

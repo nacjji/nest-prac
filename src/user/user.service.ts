@@ -42,6 +42,14 @@ export class UserService {
   }
 
   async updateUser(id: number, nickname: string) {
+    const isExistNickname = await this.userRepository.findOne({
+      where: { nickname },
+    });
+
+    if (isExistNickname) {
+      throw new ConflictException('이미 존재하는 닉네임입니다.');
+    }
+
     await this.userRepository.query(
       `UPDATE User
       SET nickname = '${nickname}'
