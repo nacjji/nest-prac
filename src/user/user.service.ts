@@ -40,4 +40,12 @@ export class UserService {
 
     return user;
   }
+
+  async updateUser(id: number, nickname: string) {
+    await this.userRepository.query(
+      `UPDATE User
+      SET nickname = '${nickname}'
+      WHERE id = ${id}`,
+    );
+  }
 }

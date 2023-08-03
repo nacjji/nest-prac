@@ -11,6 +11,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
+import {
+  CommentModel,
+  CommentParamModel,
+} from 'src/interface/comment.interface';
+import { UserModel } from 'src/interface/user.interface';
 import { commentDataValidator } from 'src/validator/commentValidator/commentDataValidator';
 import { commentParamValidator } from 'src/validator/commentValidator/commentParamValidator';
 import { commonParamValidator } from 'src/validator/common/commonParamValidator';
@@ -24,24 +29,28 @@ export class CommentController {
 
   @Get()
   async getComment(
-    @Query('articleId') articleId: number,
-    @Query('parentId') parentId: number,
-    @Query('page') page: number,
-    @Query('per') per: number,
+    @Query()
+    query: CommentParamModel,
     @Res() response: Response,
   ) {
     try {
-      await commonParamValidator.validateAsync({ page, per });
-      await commentParamValidator.validateAsync({ articleId, parentId });
+      await commonParamValidator.validateAsync({
+        page: query.page,
+        per: query.per,
+      });
+      await commentParamValidator.validateAsync({
+        articleId: query.articleId,
+        parentId: query.parentId,
+      });
     } catch (error) {
       throw new BadRequestException(error.message);
     }
 
     const comment = await this.commentService.getComment(
-      articleId,
-      parentId,
-      page,
-      per,
+      query.articleId,
+      query.parentId,
+      query.page,
+      query.per,
     );
 
     return response
@@ -51,7 +60,11 @@ export class CommentController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createComment(@Body() body, @User() user, @Res() response: Response) {
+  async createComment(
+    @Body() body: CommentModel,
+    @User() user: UserModel,
+    @Res() response: Response,
+  ) {
     const { content, articleId } = body;
     const parentId = body?.parentId; // 대댓글일 경우
     const userId = user.id;
@@ -80,7 +93,11 @@ export class CommentController {
 
   @UseGuards(JwtAuthGuard)
   @Put()
-  async updateComment(@Body() body, @User() user, @Res() response: Response) {
+  async updateComment(
+    @Body() body: CommentModel,
+    @User() user: UserModel,
+    @Res() response: Response,
+  ) {
     const { id, content } = body;
     const userId = user.id;
 
@@ -102,7 +119,11 @@ export class CommentController {
 
   @UseGuards(JwtAuthGuard)
   @Delete()
-  async deleteComment(@Body() body, @User() user, @Res() response: Response) {
+  async deleteComment(
+    @Body() body: { id: number },
+    @User() user: UserModel,
+    @Res() response: Response,
+  ) {
     const { id } = body;
     const userId = user.id;
 
