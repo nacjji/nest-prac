@@ -1,6 +1,16 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/decorators/user.decorator';
+import { UserModel } from 'src/interface/user.interface';
 import { UserService } from './user.service';
 
 @Controller('/user')
@@ -15,16 +25,27 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('user-info')
+  @Get()
   async getUser(
     @User()
-    user: {
-      id: number;
-      email: string;
-      createdAt: string;
-      updatedAt: string;
-    },
+    user: UserModel,
   ) {
     return user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  async updateUser(
+    @User() user: UserModel,
+    @Body() body: { nickname: string },
+    @Res() resoponse: Response,
+  ) {
+    const { nickname } = body;
+    const userId = user.id;
+
+    await this.userService.updateUser(userId, nickname);
+    return resoponse
+      .status(201)
+      .json({ code: 201, message: '회원정보를 수정했습니다.' });
   }
 }

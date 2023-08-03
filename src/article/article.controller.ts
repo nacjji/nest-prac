@@ -13,8 +13,13 @@ import {
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/decorators/user.decorator';
+import { UserModel } from 'src/interface/user.interface';
 import { articleDataValidator } from 'src/validator/articleValidator/articleDataValidator';
 import { commonParamValidator } from 'src/validator/common/commonParamValidator';
+import {
+  ArticleModel,
+  ArticleParamModel,
+} from '../interface/article.interface';
 import { ArticleService } from './article.service';
 
 @Controller('article')
@@ -23,7 +28,11 @@ export class ArticleController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createArticle(@Body() body, @User() user, @Res() response: Response) {
+  async createArticle(
+    @Body() body: ArticleModel,
+    @User() user: UserModel,
+    @Res() response: Response,
+  ) {
     const { title, content } = body;
     const userId = user.id;
     try {
@@ -46,22 +55,24 @@ export class ArticleController {
 
   @Get()
   async getArticle(
-    @Query('id') id: number,
-    @Query('page') page: number,
-    @Query('per') per: number,
+    @Query() query: ArticleParamModel,
     @Res() response: Response,
   ) {
     try {
       await commonParamValidator.validateAsync({
-        id,
-        page,
-        per,
+        id: query.id,
+        page: query.page,
+        per: query.per,
       });
     } catch (error) {
       throw new BadRequestException(error.message);
     }
 
-    const article = await this.articleService.getArticle(id, page, per);
+    const article = await this.articleService.getArticle(
+      query.id,
+      query.page,
+      query.per,
+    );
 
     return response
       .status(200)
@@ -70,7 +81,11 @@ export class ArticleController {
 
   @UseGuards(JwtAuthGuard)
   @Put()
-  async updateArticle(@Body() body, @User() user, @Res() response: Response) {
+  async updateArticle(
+    @Body() body: ArticleModel,
+    @User() user: UserModel,
+    @Res() response: Response,
+  ) {
     const { id, title, content } = body;
     const userId = user.id;
     const article = await this.articleService.updateArticle(
@@ -94,7 +109,11 @@ export class ArticleController {
 
   @UseGuards(JwtAuthGuard)
   @Delete()
-  async deleteArticle(@Body() body, @User() user, @Res() response: Response) {
+  async deleteArticle(
+    @Body() body: { id: number },
+    @User() user: UserModel,
+    @Res() response: Response,
+  ) {
     const { id } = body;
     const userId = user.id;
     await this.articleService.deleteArticle(id, userId);
