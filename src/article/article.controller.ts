@@ -53,15 +53,10 @@ export class ArticleController {
       throw new BadRequestException(error.message);
     }
 
-    const article = await this.articleService.createArticle(
-      title,
-      content,
-      userId,
-    );
+    await this.articleService.createArticle(title, content, userId);
     return response.status(201).json({
       code: 201,
       message: 'Article을 생성했습니다.',
-      articleId: article,
     });
   }
 
