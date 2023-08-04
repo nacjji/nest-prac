@@ -30,7 +30,7 @@ export class UserService {
       throw new ConflictException('이미 존재하는 닉네임입니다.');
     }
 
-    const hashedPassword = await hash(password, Number(process.env.SALT));
+    const hashedPassword = await hash(password, 11);
 
     const user = await this.userRepository.save({
       email,
