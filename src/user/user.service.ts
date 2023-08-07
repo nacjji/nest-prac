@@ -4,7 +4,7 @@ import { hash } from 'bcrypt';
 import * as dotenv from 'dotenv';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
-dotenv.config({ path: `.env.dev` });
+dotenv.config({ path: `.env` });
 
 @Injectable()
 export class UserService {
@@ -30,7 +30,7 @@ export class UserService {
       throw new ConflictException('이미 존재하는 닉네임입니다.');
     }
 
-    const hashedPassword = await hash(password, Number(process.env.SALT));
+    const hashedPassword = await hash(password, 11);
 
     const user = await this.userRepository.save({
       email,
@@ -39,5 +39,21 @@ export class UserService {
     });
 
     return user;
+  }
+
+  async updateUser(id: number, nickname: string) {
+    const isExistNickname = await this.userRepository.findOne({
+      where: { nickname },
+    });
+
+    if (isExistNickname) {
+      throw new ConflictException('이미 존재하는 닉네임입니다.');
+    }
+
+    await this.userRepository.query(
+      `UPDATE User
+      SET nickname = '${nickname}'
+      WHERE id = ${id}`,
+    );
   }
 }
