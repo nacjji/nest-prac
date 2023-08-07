@@ -1,26 +1,28 @@
-version: '3.9'
-
 services:
-  nest-app:
-    image: nest-app:latest
+  app:
+    container_name: nest_prac_app
+    image: app:latest
     ports:
       - '8000:8000'
     depends_on:
-      - nest-db
+      - db
     environment:
-      - DATABASE_URL=mysql://fig:skwldnjs1!@nest-db:3306/nest-db
-
+      DATABASE_URL: mysql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+      SALT: ${SALT}
+      JWT_SECRET: ${JWT_SECRET}
     networks:
       - nest-network
 
-  nest-db:
+  db:
+    container_name: nestdb
     image: mysql:latest
     environment:
-      - MYSQL_ROOT_PASSWORD=skwldnjs1!
-      - MYSQL_USER=fig
-      - MYSQL_PASSWORD=skwldnjs1!
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
     networks:
       - nest-network
 
 networks:
   nest-network:
+    external: true

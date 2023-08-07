@@ -4,7 +4,7 @@ import { DataSource } from 'typeorm';
 import { ArticleEntity } from './src/entities/article.entity';
 import { CommentEntity } from './src/entities/comment.entity';
 import { UserEntity } from './src/entities/user.entity';
-dotenv.config({ path: `.env.dev` });
+dotenv.config({ path: `.env` });
 
 export const dataSource = new DataSource({
   type: 'mysql',
