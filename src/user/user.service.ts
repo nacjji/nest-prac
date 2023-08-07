@@ -4,7 +4,7 @@ import { hash } from 'bcrypt';
 import * as dotenv from 'dotenv';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
-dotenv.config({ path: `.env.dev` });
+dotenv.config({ path: `.env` });
 
 @Injectable()
 export class UserService {
