@@ -1,7 +1,7 @@
 services:
   app:
     container_name: nest_prac_app
-    image: app:latest
+    image: nacjji/app
     ports:
       - '8000:8000'
     depends_on:
