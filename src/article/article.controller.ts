@@ -8,12 +8,16 @@ import {
   Put,
   Query,
   Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/decorators/user.decorator';
+import { FileService } from 'src/file/file.service';
 import { ReadUserDto } from 'src/user/user.dto';
 import { articleDataValidator } from 'src/validator/articleValidator/articleDataValidator';
 import { commonParamValidator } from 'src/validator/common/commonParamValidator';
@@ -28,8 +32,12 @@ import { ArticleService } from './article.service';
 @ApiTags('Article API')
 @Controller('article')
 export class ArticleController {
-  constructor(private readonly articleService: ArticleService) {}
+  constructor(
+    private readonly articleService: ArticleService,
+    private readonly fileService: FileService,
+  ) {}
 
+  // Article Create
   @ApiOperation({
     summary: 'Article 작성 API',
     description: '유저가 Article을 작성한다.',
@@ -40,10 +48,12 @@ export class ArticleController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
+  @UseInterceptors(FileInterceptor('file'))
   async createArticle(
     @Body() body: CreateArticleDto,
     @User() user: ReadUserDto,
     @Res() response: Response,
+    @UploadedFile() file: Express.Multer.File,
   ) {
     const { title, content } = body;
     const userId = user.id;
@@ -53,7 +63,8 @@ export class ArticleController {
       throw new BadRequestException(error.message);
     }
 
-    await this.articleService.createArticle(title, content, userId);
+    await this.articleService.createArticle(title, content, userId, file);
+
     return response.status(201).json({
       code: 201,
       message: 'Article을 생성했습니다.',
@@ -97,19 +108,16 @@ export class ArticleController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Put()
+  @UseInterceptors(FileInterceptor('file'))
   async updateArticle(
     @Body() body: UpdateArticleDto,
     @User() user: ReadUserDto,
     @Res() response: Response,
+    @UploadedFile() file: Express.Multer.File,
   ) {
     const { id, title, content } = body;
     const userId = user.id;
-    const article = await this.articleService.updateArticle(
-      id,
-      title,
-      content,
-      userId,
-    );
+
     try {
       await articleDataValidator
         .tailor('update')
@@ -117,7 +125,13 @@ export class ArticleController {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
-
+    const article = await this.articleService.updateArticle(
+      id,
+      title,
+      content,
+      userId,
+      file,
+    );
     return response
       .status(201)
       .json({ code: 201, message: 'Article을 수정했습니다.', data: article });
