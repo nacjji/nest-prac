@@ -14,10 +14,6 @@ export class ArticleService {
     @InjectRepository(FileEntity)
     private readonly fileRepository: Repository<FileEntity>,
   ) {}
-  // constructor(
-  //   @InjectRepository(ArticleEntity)
-  //   private readonly articleRepository: Repository<ArticleEntity>,
-  // ) {}
 
   async isExist(id: number, userId: number) {
     const [isExist] = await this.articleRepository.query(
@@ -63,12 +59,13 @@ export class ArticleService {
           DATE_FORMAT(a.createdAt, '%Y-%m-%d %H:%i') AS createdAt 
         FROM Article AS a
         LEFT JOIN User AS u ON u.id = a.userId
-        LEFT JOIN File AS f ON f.articleId = a.id
+        LEFT JOIN File AS f ON f.articleId = a.id AND f.deletedAt IS NULL
         WHERE a.deletedAt IS NULL
         ${articleId ? `AND a.id = ${articleId}` : ``}
         ORDER BY a.createdAt DESC, a.id DESC
         ${attachOffsetLimit(page, per)}`,
     );
+
     return article;
   }
 
