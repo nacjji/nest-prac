@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { CommentEntity } from './comment.entity';
 import { CommonBigPkEntity } from './common/common.entity';
+import { FileEntity } from './file.entity';
 import { UserEntity } from './user.entity';
 
 @Entity('Article')
@@ -32,5 +33,12 @@ export class ArticleEntity extends CommonBigPkEntity {
       comment.article;
     },
   )
+  @OneToMany(
+    () => FileEntity,
+    (file) => {
+      file.article;
+    },
+  )
   comments: CommentEntity;
+  files: FileEntity;
 }
