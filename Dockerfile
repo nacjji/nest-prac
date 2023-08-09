@@ -3,7 +3,8 @@ WORKDIR /nest-prac
 COPY . .
 RUN rm -rf node_modules
 RUN npm install
-CMD ["npm", "run", "start:dev"]
+RUN npm run build
+CMD ["npm", "run", "start"]
 EXPOSE 8000
 
 
