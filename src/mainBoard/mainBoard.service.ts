@@ -1,75 +1,74 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ArticleEntity } from 'src/entities/article.entity';
 import { FileEntity } from 'src/entities/file.entity';
+import { MainBoardEntity } from 'src/entities/mainBoard.entity';
 import { attachOffsetLimit } from 'src/function/common.function';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class ArticleService {
+export class MainBoardService {
   constructor(
-    @InjectRepository(ArticleEntity)
-    private readonly articleRepository: Repository<ArticleEntity>,
+    @InjectRepository(MainBoardEntity)
+    private readonly mainBoardRepository: Repository<MainBoardEntity>,
 
     @InjectRepository(FileEntity)
     private readonly fileRepository: Repository<FileEntity>,
   ) {}
 
   async isExist(id: number, userId: number) {
-    const [isExist] = await this.articleRepository.query(
+    const [isExist] = await this.mainBoardRepository.query(
       `SELECT 
         *
-      FROM Article 
+      FROM MainBoard 
       WHERE id = ${id}
       AND deletedAt IS NULL`,
     );
 
     if (!isExist)
-      throw new ConflictException('존재하지 않거나 삭제된 Article입니다.');
+      throw new ConflictException('존재하지 않거나 삭제된 MainBoard입니다.');
 
     if (isExist.userId !== userId)
       throw new ConflictException('작성자만 수정할 수 있습니다.');
   }
 
-  async createArticle(
+  async createMainBoard(
     title: string,
     content: string,
     userId: number,
     file: Express.Multer.File,
   ) {
     // Raw Query 사용하는 방식
-    const res = await this.articleRepository.query(
-      `INSERT INTO Article(title, content, userId) VALUES('${title}', '${content}', ${userId}) `,
+    const res = await this.mainBoardRepository.query(
+      `INSERT INTO MainBoard(title, content, userId) VALUES('${title}', '${content}', ${userId}) `,
     );
 
     await this.fileRepository.query(
-      `INSERT INTO File(articleId, filename, size)
+      `INSERT INTO File(mainBoardId, filename, size)
       VALUES(${res.insertId}, '${file.filename}', ${file.size})`,
     );
   }
 
-  async getArticle(articleId?: number, page?: number, per?: number) {
-    const article = await this.articleRepository.query(
+  async getMainBoard(mainBoardId?: number, page?: number, per?: number) {
+    const mainBoard = await this.mainBoardRepository.query(
       `SELECT 
           a.id, 
           title, 
           u.nickname,
-          ${articleId ? `content,` : ``}
-          ${articleId ? `f.filename,` : ``}
+          ${mainBoardId ? `content,` : ``}
+          ${mainBoardId ? `f.filename,` : ``}
           DATE_FORMAT(a.createdAt, '%Y-%m-%d %H:%i') AS createdAt 
-        FROM Article AS a
+        FROM MainBoard AS a
         LEFT JOIN User AS u ON u.id = a.userId
-        LEFT JOIN File AS f ON f.articleId = a.id AND f.deletedAt IS NULL
+        LEFT JOIN File AS f ON f.mainBoardId = a.id
         WHERE a.deletedAt IS NULL
-        ${articleId ? `AND a.id = ${articleId}` : ``}
+        ${mainBoardId ? `AND a.id = ${mainBoardId}` : ``}
         ORDER BY a.createdAt DESC, a.id DESC
         ${attachOffsetLimit(page, per)}`,
     );
-
-    return article;
+    return mainBoard;
   }
 
-  async updateArticle(
+  async updateMainBoard(
     id: number,
     title: string,
     content: string,
@@ -77,8 +76,8 @@ export class ArticleService {
     file: Express.Multer.File,
   ) {
     await this.isExist(id, userId);
-    await this.articleRepository.query(
-      `UPDATE Article 
+    await this.mainBoardRepository.query(
+      `UPDATE MainBoard 
       SET 
         title = '${title}',
         content= '${content}',
@@ -92,7 +91,7 @@ export class ArticleService {
       `SELECT 
         id 
       FROM File 
-      WHERE articleId = ${id}
+      WHERE mainBoardId = ${id}
       AND deletedAt IS NULL`,
     );
 
@@ -103,7 +102,7 @@ export class ArticleService {
         SET 
           filename = '${file.filename}',
           size = ${file.size},
-          articleId= ${id}
+          mainBoardId= ${id}
         `,
       );
     await this.fileRepository.query(
@@ -115,36 +114,36 @@ export class ArticleService {
               size = ${file.size}`
           : ` deletedAt = NOW()`
       } 
-      WHERE articleId = ${id}
+      WHERE mainBoardId = ${id}
       AND deletedAt IS NULL
         `,
     );
   }
 
-  async deleteArticle(id: number, userId: number) {
+  async deleteMainBoard(id: number, userId: number) {
     await this.isExist(id, userId);
 
     // transaction 추가예정
 
-    await this.articleRepository.query(
+    await this.mainBoardRepository.query(
       `UPDATE 
-        Article
+        MainBoard
       SET deletedAt = NOW()
       WHERE id = ${id}`,
     );
 
-    await this.articleRepository.query(
+    await this.mainBoardRepository.query(
       `UPDATE 
         Comment
       SET deletedAt = NOW()
-      WHERE articleId = ${id}`,
+      WHERE mainBoardId = ${id}`,
     );
 
     await this.fileRepository.query(
       `UPDATE 
         File
       SET deletedAt = NOW()
-      WHERE articleId = ${id}`,
+      WHERE mainBoardId = ${id}`,
     );
   }
 }

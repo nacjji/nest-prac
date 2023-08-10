@@ -2,19 +2,19 @@ import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { multerOptionsFactory } from 'src/common/utils/multer.options.factory';
-import { ArticleEntity } from 'src/entities/article.entity';
 import { FileEntity } from 'src/entities/file.entity';
+import { MainBoardEntity } from 'src/entities/mainBoard.entity';
 import { FileService } from 'src/file/file.service';
-import { ArticleController } from './article.controller';
-import { ArticleService } from './article.service';
+import { MainBoardController } from './mainBoard.controller';
+import { MainBoardService } from './mainBoard.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ArticleEntity, FileEntity]),
+    TypeOrmModule.forFeature([MainBoardEntity, FileEntity]),
     MulterModule.registerAsync({ useFactory: multerOptionsFactory }),
   ],
   exports: [TypeOrmModule],
-  controllers: [ArticleController],
-  providers: [ArticleService, FileService],
+  controllers: [MainBoardController],
+  providers: [MainBoardService, FileService],
 })
-export class ArticleModule {}
+export class MainBoardModule {}

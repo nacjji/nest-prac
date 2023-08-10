@@ -13,7 +13,7 @@ import {
 import { ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger';
 
 import { Response } from 'express';
-import { DeleteArticleDto } from 'src/article/article.dto';
+import { DeleteMainBoardDto } from 'src/mainBoard/mainBoard.dto';
 import { ReadUserDto } from 'src/user/user.dto';
 
 import { commentDataValidator } from 'src/validator/commentValidator/commentDataValidator';
@@ -47,7 +47,7 @@ export class CommentController {
         per: query.per,
       });
       await commentParamValidator.validateAsync({
-        articleId: query.articleId,
+        mainBoardId: query.mainBoardId,
         parentId: query.parentId,
       });
     } catch (error) {
@@ -55,7 +55,7 @@ export class CommentController {
     }
 
     const comment = await this.commentService.getComment(
-      query.articleId,
+      query.mainBoardId,
       query.parentId,
       query.page,
       query.per,
@@ -82,7 +82,7 @@ export class CommentController {
     @Res() response: Response,
   ) {
     const content = body.content;
-    const articleId = Number(body.articleId);
+    const mainBoardId = Number(body.mainBoardId);
     const parentId = Number(body.parentId) || undefined; // 대댓글일 경우
     const userId = user.id;
 
@@ -90,7 +90,7 @@ export class CommentController {
       await commentDataValidator.tailor('create').validateAsync({
         content,
         parentId,
-        articleId,
+        mainBoardId,
       });
     } catch (error) {
       throw new BadRequestException(error.message);
@@ -98,7 +98,7 @@ export class CommentController {
 
     await this.commentService.createComment(
       content,
-      articleId,
+      mainBoardId,
       userId,
       parentId,
     );
@@ -147,13 +147,13 @@ export class CommentController {
     description: '유저가 댓글을 삭제한다.',
   })
   @ApiBody({
-    type: DeleteArticleDto,
+    type: DeleteMainBoardDto,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete()
   async deleteComment(
-    @Body() body: DeleteArticleDto,
+    @Body() body: DeleteMainBoardDto,
     @User() user: ReadUserDto,
     @Res() response: Response,
   ) {
