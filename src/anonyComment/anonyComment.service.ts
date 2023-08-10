@@ -30,6 +30,8 @@ export class AnonyCommentService {
 
     if (isExist.password !== password)
       throw new ConflictException('비밀번호가 일치하지 않습니다.');
+
+    return isExist;
   }
 
   async getAnonyComment(
