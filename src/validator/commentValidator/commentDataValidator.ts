@@ -5,10 +5,10 @@ export const commentDataValidator = Joi.object({
     .alter({ update: (schema) => schema.required() })
     .error(new Error('ID를 확인해주세요')),
   content: Joi.string().required().error(new Error('ID를 확인해주세요')),
-  articleId: Joi.number()
+  mainBoardId: Joi.number()
     .alter({ create: (schema) => schema.required() })
     .integer()
-    .error(new Error('Article ID를 확인해주세요')),
+    .error(new Error('MainBoard ID를 확인해주세요')),
   parentId: Joi.number()
     .optional()
     .integer()

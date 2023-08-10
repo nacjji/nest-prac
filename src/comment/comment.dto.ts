@@ -3,13 +3,13 @@ import { CommonDto } from 'src/dto/common.dto';
 import { CommentEntity } from 'src/entities/comment.entity';
 
 export class ReadCommentDto extends CommonDto {
-  articleId: number;
+  mainBoardId: number;
   parentId: number;
 }
 
 export class CreateCommentDto extends PickType(CommentEntity, [
   'content',
-  'articleId',
+  'mainBoardId',
   'parentId',
 ]) {}
 

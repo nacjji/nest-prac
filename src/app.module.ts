@@ -6,11 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as path from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ArticleModule } from './article/article.module';
 import { AuthModule } from './auth/auth.module';
 import { CommentModule } from './comment/comment.module';
 import { HttpExceptionFilter } from './filter/http-exception.filter';
 import { undefinedToNullInterceptor } from './interceptors/undefinedToNull.interceptor';
+import { MainBoardModule } from './mainBoard/mainBoard.module';
 import { UserModule } from './user/user.module';
 import { configValidator } from './validator/common/configValidator';
 require('dotenv').config();
@@ -42,7 +42,7 @@ require('dotenv').config();
     }),
     UserModule,
     AuthModule,
-    ArticleModule,
+    MainBoardModule,
     CommentModule,
   ],
   controllers: [AppController],

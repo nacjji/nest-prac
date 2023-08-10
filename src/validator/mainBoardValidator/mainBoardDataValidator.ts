@@ -1,6 +1,6 @@
 import * as Joi from 'joi';
 
-export const articleDataValidator = Joi.object({
+export const mainBoardDataValidator = Joi.object({
   id: Joi.number().alter({
     update: (schema) =>
       schema.required().error(new Error('ID를 확인해주세요.')),

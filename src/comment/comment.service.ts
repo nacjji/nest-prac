@@ -28,7 +28,7 @@ export class CommentService {
   }
 
   async getComment(
-    articleId: number,
+    mainBoardId: number,
     parentId?: number,
     page?: number,
     per?: number,
@@ -38,13 +38,13 @@ export class CommentService {
         c.id, 
         u.nickname,
         content, 
-        articleId, 
+        mainBoardId, 
         parentId, 
         userId, 
         DATE_FORMAT(c.createdAt, '%Y-%m-%d %H:%i') AS createdAt 
       FROM Comment AS c
       LEFT JOIN User AS u ON u.id = c.userId
-      WHERE articleId = ${articleId}
+      WHERE mainBoardId = ${mainBoardId}
       ${parentId ? `AND parentId = ${parentId}` : ``}
       ORDER BY c.createdAt DESC
       ${attachOffsetLimit(page, per)}`,
@@ -55,20 +55,20 @@ export class CommentService {
 
   async createComment(
     content: string,
-    articleId: number,
+    mainBoardId: number,
     userId: number,
     parentId?: number,
   ) {
-    const [isExistArticle] = await this.commentRepository.query(
+    const [isExistMainBoard] = await this.commentRepository.query(
       `SELECT 
         id 
-      FROM Article 
-      WHERE id = ${articleId}
+      FROM MainBoard 
+      WHERE id = ${mainBoardId}
       AND deletedAt IS NULL`,
     );
 
-    if (!isExistArticle)
-      throw new ConflictException('존재하지 않는 Article ID입니다.');
+    if (!isExistMainBoard)
+      throw new ConflictException('존재하지 않는 MainBoard ID입니다.');
 
     if (parentId) {
       const [isParent] = await this.commentRepository.query(
@@ -76,7 +76,7 @@ export class CommentService {
         id
       FROM Comment
       WHERE id = ${parentId}
-      AND articleId = ${articleId}`,
+      AND mainBoardId = ${mainBoardId}`,
       );
 
       if (!isParent) throw new ConflictException('존재하지 않는 댓글입니다.');
@@ -86,12 +86,12 @@ export class CommentService {
       `INSERT INTO Comment(
           content, 
           parentId, 
-          articleid, 
+          mainBoardId, 
           userId) 
       VALUES(
         '${content}', 
         ${parentId ? parentId : 'NULL'}, 
-        ${articleId}, 
+        ${mainBoardId}, 
         ${userId})`,
     );
 

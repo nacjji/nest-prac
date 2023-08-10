@@ -19,38 +19,38 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/decorators/user.decorator';
 import { FileService } from 'src/file/file.service';
 import { ReadUserDto } from 'src/user/user.dto';
-import { articleDataValidator } from 'src/validator/articleValidator/articleDataValidator';
 import { commonParamValidator } from 'src/validator/common/commonParamValidator';
+import { mainBoardDataValidator } from 'src/validator/mainBoardValidator/mainBoardDataValidator';
 import {
-  CreateArticleDto,
-  DeleteArticleDto,
-  ReadArticleDto,
-  UpdateArticleDto,
-} from './article.dto';
-import { ArticleService } from './article.service';
+  CreateMainBoardDto,
+  DeleteMainBoardDto,
+  ReadMainBoardDto,
+  UpdateMainBoardDto,
+} from './mainBoard.dto';
+import { MainBoardService } from './mainBoard.service';
 
-@ApiTags('Article API')
-@Controller('article')
-export class ArticleController {
+@ApiTags('MainBoard API')
+@Controller('mainBoard')
+export class MainBoardController {
   constructor(
-    private readonly articleService: ArticleService,
+    private readonly mainBoardService: MainBoardService,
     private readonly fileService: FileService,
   ) {}
 
-  // Article Create
+  // MainBoard Create
   @ApiOperation({
-    summary: 'Article 작성 API',
-    description: '유저가 Article을 작성한다.',
+    summary: 'MainBoard 작성 API',
+    description: '유저가 Mainboard를 작성한다.',
   })
   @ApiBody({
-    type: CreateArticleDto,
+    type: CreateMainBoardDto,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async createArticle(
-    @Body() body: CreateArticleDto,
+  async createMainBoard(
+    @Body() body: CreateMainBoardDto,
     @User() user: ReadUserDto,
     @Res() response: Response,
     @UploadedFile() file: Express.Multer.File,
@@ -58,25 +58,28 @@ export class ArticleController {
     const { title, content } = body;
     const userId = user.id;
     try {
-      await articleDataValidator.validateAsync({ title, content });
+      await mainBoardDataValidator.validateAsync({ title, content });
     } catch (error) {
       throw new BadRequestException(error.message);
     }
 
-    await this.articleService.createArticle(title, content, userId, file);
+    await this.mainBoardService.createMainBoard(title, content, userId, file);
 
     return response.status(201).json({
       code: 201,
-      message: 'Article을 생성했습니다.',
+      message: 'MainBoard을 생성했습니다.',
     });
   }
 
   @ApiOperation({
-    summary: 'Article 조회 API',
-    description: '유저가 Article 리스트 또는 상세내용을 조회한다.',
+    summary: 'MainBoard 조회 API',
+    description: '유저가 MainBoard 리스트 또는 상세내용을 조회한다.',
   })
   @Get()
-  async getArticle(@Query() query: ReadArticleDto, @Res() response: Response) {
+  async getMainBoard(
+    @Query() query: ReadMainBoardDto,
+    @Res() response: Response,
+  ) {
     try {
       await commonParamValidator.validateAsync({
         id: query.id,
@@ -87,30 +90,32 @@ export class ArticleController {
       throw new BadRequestException(error.message);
     }
 
-    const article = await this.articleService.getArticle(
+    const mainBoard = await this.mainBoardService.getMainBoard(
       query.id,
       query.page,
       query.per,
     );
 
-    return response
-      .status(200)
-      .json({ code: 200, message: 'Article을 불러왔습니다.', data: article });
+    return response.status(200).json({
+      code: 200,
+      message: 'MainBoard를 불러왔습니다.',
+      data: mainBoard,
+    });
   }
 
   @ApiOperation({
-    summary: 'Article 수정 API',
-    description: '유저가 Article을 수정한다.',
+    summary: 'MainBoard 수정 API',
+    description: '유저가 MainBoard를 수정한다.',
   })
   @ApiBody({
-    type: UpdateArticleDto,
+    type: UpdateMainBoardDto,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Put()
   @UseInterceptors(FileInterceptor('file'))
-  async updateArticle(
-    @Body() body: UpdateArticleDto,
+  async updateMainBoard(
+    @Body() body: UpdateMainBoardDto,
     @User() user: ReadUserDto,
     @Res() response: Response,
     @UploadedFile() file: Express.Multer.File,
@@ -119,44 +124,46 @@ export class ArticleController {
     const userId = user.id;
 
     try {
-      await articleDataValidator
+      await mainBoardDataValidator
         .tailor('update')
         .validateAsync({ id, title, content });
     } catch (error) {
       throw new BadRequestException(error.message);
     }
-    const article = await this.articleService.updateArticle(
+    const mainBoard = await this.mainBoardService.updateMainBoard(
       id,
       title,
       content,
       userId,
       file,
     );
-    return response
-      .status(201)
-      .json({ code: 201, message: 'Article을 수정했습니다.', data: article });
+    return response.status(201).json({
+      code: 201,
+      message: 'MainBoard를 수정했습니다.',
+      data: mainBoard,
+    });
   }
 
   @ApiOperation({
-    summary: 'Article 삭제 API',
-    description: '유저가 Article을 삭제한다.',
+    summary: 'MainBoard 삭제 API',
+    description: '유저가 MainBoard을 삭제한다.',
   })
   @ApiBody({
-    type: DeleteArticleDto,
+    type: DeleteMainBoardDto,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete()
-  async deleteArticle(
-    @Body() body: DeleteArticleDto,
+  async deleteMainBoard(
+    @Body() body: DeleteMainBoardDto,
     @User() user: ReadUserDto,
     @Res() response: Response,
   ) {
     const { id } = body;
     const userId = user.id;
-    await this.articleService.deleteArticle(id, userId);
+    await this.mainBoardService.deleteMainBoard(id, userId);
     return response
       .status(201)
-      .json({ code: 201, message: 'Article 을 삭제했습니다.' });
+      .json({ code: 201, message: 'MainBoard 을 삭제했습니다.' });
   }
 }
