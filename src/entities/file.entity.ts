@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { ArticleEntity } from './article.entity';
 import { CommonBigPkEntity } from './common/common.entity';
+import { MainBoardEntity } from './mainBoard.entity';
 
 @Entity('File')
 export class FileEntity extends CommonBigPkEntity {
@@ -21,7 +21,7 @@ export class FileEntity extends CommonBigPkEntity {
   })
   size: number;
 
-  @ManyToOne(() => ArticleEntity, (article) => article.files)
-  @JoinColumn({ name: 'articleId', referencedColumnName: 'id' })
-  article: ArticleEntity;
+  @ManyToOne(() => MainBoardEntity, (mainBoard) => mainBoard.files)
+  @JoinColumn({ name: 'mainBoardId', referencedColumnName: 'id' })
+  mainBoard: MainBoardEntity;
 }

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { ArticleEntity } from './article.entity';
 import { CommonBigPkEntity } from './common/common.entity';
+import { MainBoardEntity } from './mainBoard.entity';
 import { UserEntity } from './user.entity';
 
 @Entity('Comment')
@@ -27,17 +27,17 @@ export class CommentEntity extends CommonBigPkEntity {
 
   @Column('bigint', { unique: false, nullable: false })
   @ApiProperty({
-    example: 'Article ID',
-    description: 'Article ID',
+    example: 'MainBoard ID',
+    description: 'MainBoard ID',
     required: true,
   })
-  articleId: string | null;
+  mainBoardId: string | null;
 
   @ManyToOne(() => UserEntity, (user) => user.comments)
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: UserEntity;
 
-  @ManyToOne(() => ArticleEntity, (article) => article.comments)
-  @JoinColumn({ name: 'articleId', referencedColumnName: 'id' })
-  article: ArticleEntity;
+  @ManyToOne(() => MainBoardEntity, (mainBoard) => mainBoard.comments)
+  @JoinColumn({ name: 'mainBoardId', referencedColumnName: 'id' })
+  mainBoard: MainBoardEntity;
 }

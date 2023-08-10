@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany } from 'typeorm';
-import { ArticleEntity } from './article.entity';
 import { CommentEntity } from './comment.entity';
 import { CommonBigPkEntity } from './common/common.entity';
+import { MainBoardEntity } from './mainBoard.entity';
 
 @Entity('User')
 export class UserEntity extends CommonBigPkEntity {
@@ -14,8 +14,8 @@ export class UserEntity extends CommonBigPkEntity {
   @Column('varchar', { unique: false, nullable: false })
   password: string;
 
-  @OneToMany(() => ArticleEntity, (article) => article.user)
-  articles: ArticleEntity[];
+  @OneToMany(() => MainBoardEntity, (mainBoard) => mainBoard.user)
+  mainBoards: MainBoardEntity[];
 
   @OneToMany(() => CommentEntity, (comment) => comment.user)
   comments: CommentEntity[];

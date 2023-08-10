@@ -1,10 +1,10 @@
 import * as Joi from 'joi';
 
 export const commentParamValidator = Joi.object({
-  articleId: Joi.number()
+  mainBoardId: Joi.number()
     .required()
     .integer()
-    .error(new Error('Article ID를 확인해주세요')),
+    .error(new Error('MainBoard ID를 확인해주세요')),
   parentId: Joi.number()
     .optional()
     .integer()
