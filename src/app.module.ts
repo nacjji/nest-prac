@@ -4,6 +4,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as path from 'path';
+import { AnonyBoardModule } from './anonyBoard/anonyBoard.module';
+import { AnonyCommentModule } from './anonyComment/anonyComment.moudule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -35,7 +37,6 @@ require('dotenv').config();
         entities: [path.join(__dirname, '/entities/**/*.entity.{js, ts}')],
         synchronize: false,
         logging: true,
-        // 자동 Entity 추가
         autoLoadEntities: true,
         timezone: 'local',
       }),
@@ -44,6 +45,8 @@ require('dotenv').config();
     AuthModule,
     MainBoardModule,
     CommentModule,
+    AnonyBoardModule,
+    AnonyCommentModule,
   ],
   controllers: [AppController],
   providers: [

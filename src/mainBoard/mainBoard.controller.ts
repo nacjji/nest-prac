@@ -17,7 +17,6 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/decorators/user.decorator';
-import { FileService } from 'src/file/file.service';
 import { ReadUserDto } from 'src/user/user.dto';
 import { commonParamValidator } from 'src/validator/common/commonParamValidator';
 import { mainBoardDataValidator } from 'src/validator/mainBoardValidator/mainBoardDataValidator';
@@ -32,10 +31,7 @@ import { MainBoardService } from './mainBoard.service';
 @ApiTags('MainBoard API')
 @Controller('mainBoard')
 export class MainBoardController {
-  constructor(
-    private readonly mainBoardService: MainBoardService,
-    private readonly fileService: FileService,
-  ) {}
+  constructor(private readonly mainBoardService: MainBoardService) {}
 
   // MainBoard Create
   @ApiOperation({
