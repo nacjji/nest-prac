@@ -25,6 +25,7 @@ export class CommentService {
 
     if (isExist.userId !== userId)
       throw new ConflictException('작성자만 수정할 수 있습니다.');
+    return isExist;
   }
 
   async getComment(
@@ -94,7 +95,6 @@ export class CommentService {
         ${mainBoardId}, 
         ${userId})`,
     );
-
     return;
   }
 
