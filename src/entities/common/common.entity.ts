@@ -1,3 +1,5 @@
+// 모든 테이블이 공통적으로 사용하는 컬럼
+
 import {
   CreateDateColumn,
   DeleteDateColumn,
