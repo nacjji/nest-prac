@@ -26,6 +26,7 @@ import {
 } from './anonyBoard.dto';
 import { AnonyBoardService } from './anonyBoard.service';
 
+// Swagger
 @ApiTags('AnonyBoard API')
 @Controller('anonyBoard')
 export class AnonyBoardController {
@@ -36,10 +37,12 @@ export class AnonyBoardController {
     summary: 'AnonyBoard 작성 API',
     description: '유저가 AnonyBoard를 작성한다.',
   })
+  // Body DTO 타입 설정
   @ApiBody({
     type: CreateAnonyBoardDto,
   })
   @Post()
+  // 파일 업로더
   @UseInterceptors(FileInterceptor('file'))
   async createAnonyBoard(
     @Body() body: CreateAnonyBoardDto,
@@ -53,9 +56,7 @@ export class AnonyBoardController {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
-
     await this.anonyBoardService.createAnonyBoard(data, file);
-
     return response.status(201).json({
       code: 201,
       message: 'AnonyBoard을 생성했습니다.',
@@ -82,8 +83,8 @@ export class AnonyBoardController {
 
     const anonyBoard = await this.anonyBoardService.getAnonyBoard(param);
 
-    return response.status(201).json({
-      code: 201,
+    return response.status(200).json({
+      code: 200,
       message: 'AnonyBoard을 불러왔습니다.',
       data: anonyBoard,
     });

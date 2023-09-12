@@ -33,7 +33,7 @@ import { MainBoardService } from './mainBoard.service';
 export class MainBoardController {
   constructor(private readonly mainBoardService: MainBoardService) {}
 
-  // MainBoard Create
+  // MainBoard 생성하기
   @ApiOperation({
     summary: 'MainBoard 작성 API',
     description: '유저가 Mainboard를 작성한다.',
@@ -67,6 +67,7 @@ export class MainBoardController {
     });
   }
 
+  // MainBoard 불러오기
   @ApiOperation({
     summary: 'MainBoard 조회 API',
     description: '유저가 MainBoard 리스트 또는 상세내용을 조회한다.',
@@ -99,6 +100,7 @@ export class MainBoardController {
     });
   }
 
+  // MainBoard 수정하기
   @ApiOperation({
     summary: 'MainBoard 수정 API',
     description: '유저가 MainBoard를 수정한다.',
@@ -140,6 +142,7 @@ export class MainBoardController {
     });
   }
 
+  // MainBoard 삭제하기
   @ApiOperation({
     summary: 'MainBoard 삭제 API',
     description: '유저가 MainBoard을 삭제한다.',
