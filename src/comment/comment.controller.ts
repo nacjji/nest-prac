@@ -31,6 +31,7 @@ import { CommentService } from './comment.service';
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
+  // Swagger
   @ApiOperation({
     summary: '댓글 조회 API',
     description: '유저가 댓글을 조회한다.',
@@ -66,6 +67,7 @@ export class CommentController {
       .json({ code: 200, message: '댓글을 불러왔습니다.', data: comment });
   }
 
+  // Swagger
   @ApiOperation({
     summary: '댓글 작성 API',
     description: '유저가 댓글을 작성한다.',
